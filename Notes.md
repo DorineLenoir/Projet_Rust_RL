@@ -94,3 +94,40 @@ pas encore un entraînement LGP.
   l’évolution de la population facilite le diagnostic des erreurs.
 - Les règles exactes et les critères de réussite sont ceux de l’énoncé du
   projet ; ces notes donnent une vue d’ensemble et ne les remplacent pas.
+
+
+# Resumé (Zeineb):
+  Détaillons le parcours du programme dans main.rs, puis ce que fait l’environnement dans cartpole.rs.
+
+1. L’état du CartPole
+L’environnement représente le chariot et le pendule par quatre nombres, dans cet ordre :
+
+x : position du chariot ;
+x_dot : vitesse du chariot ;
+theta : angle du pendule par rapport à la verticale ;
+theta_dot : vitesse angulaire du pendule.
+Un état proche de [0, 0, 0, 0] signifie que le chariot est au centre, immobile, avec le pendule vertical et immobile. Au démarrage, les quatre valeurs sont plutôt tirées au hasard dans une petite plage autour de zéro : de -0,05 à 0,05.
+
+2. Les actions tirées par main
+main crée un générateur aléatoire avec la graine 1, puis tire une valeur entre 0 et 3 à chaque tour. Cette valeur est passée à env.step.
+
+Dans l’environnement, l’action est interprétée seulement selon son signe :
+
+0 produit une force de -10 ;
+1, 2 et 3 produisent une force de +10.
+Ainsi, les quatre actions ne correspondent pas à quatre mouvements différents : il n’y a que deux directions possibles, et le tirage choisit la direction positive trois fois sur quatre. L’action ne dépend pas de l’état du pendule ; le programme ne cherche donc pas à corriger sa position.
+
+3. Ce que calcule un pas
+À chaque appel à step, le programme utilise la position et les vitesses actuelles pour estimer les accélérations du chariot (x_dd) et du pendule (t_dd). Le calcul prend en compte la force appliquée, la gravité, les masses et l’angle du pendule.
+
+Ensuite, il met à jour les positions et les vitesses avec tau, qui vaut 0,02 seconde. C’est une approximation du mouvement continu : le programme avance par petits intervalles de temps. La valeur de tau signifie que 500 pas représentent environ 10 secondes de simulation.
+
+L’environnement renvoie alors le nouvel état, une récompense et un booléen indiquant si l’épisode est terminé. Le nouvel état est bien renvoyé à main, mais celui-ci l’ignore avec _ : il ne s’en sert pas pour décider de la prochaine action.
+
+4. Quand l’épisode se termine et ce que signifie le score
+L’épisode se termine si le chariot dépasse -2,4 ou +2,4, si le pendule dépasse -12° ou +12°, ou après 500 pas. Chaque pas rapporte 1 point, donc total_reward correspond essentiellement au nombre de pas effectués avant la fin.
+
+Deux détails à noter :
+
+Le commentaire de main dit que l’environnement est réinitialisé, mais le programme ne appelle pas reset : les valeurs initiales sont déjà créées par CartPole::default().
+step reçoit aussi le générateur aléatoire, mais ne l’utilise pas. La graine 1 sert ici à choisir les actions ; la graine 0 utilisée dans CartPole::default() sert à produire l’état initial.
