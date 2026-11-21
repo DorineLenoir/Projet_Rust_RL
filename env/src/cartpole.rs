@@ -6,7 +6,6 @@ use rand_distr::Distribution;
 
 use crate::{Environment, Score, State, pcgrng::PCGRng};
 
-/// The [CartPole] struct represents the cart-pole environment, which is a classic control problem in reinforcement learning.
 pub struct CartPole {
     /// Gravity force
     g: f32,
@@ -20,26 +19,23 @@ pub struct CartPole {
     tau: f32,
     force_mag: f32,
 
-    // State (expliquer dans lib.rs)
-    x: f32,
-    x_dot: f32,
-    theta: f32,
-    theta_dot: f32,
+    // State
+    x: f32, // position of the cart
+    x_dot: f32, // vitesse of the cart
+    theta: f32, // angle de pendule par rapp à la verticale
+    theta_dot: f32, // vitesse angulaire du pendule
 
     // Threshold indicating when to stop the episode
-    threshold_x: f32, // Maximum position of the cart before the episode ends
-    threshold_theta: f32, // Maximum angle of the pole before the episode ends
-    episode_length: usize, // Number of steps taken in the current episode
-    episode_done: bool, // Flag indicating whether the episode is done
+    threshold_x: f32,
+    threshold_theta: f32,
+    episode_length: usize,
+    episode_done: bool,
 }
 
 impl Environment for CartPole {
-
-    // Fonction step qui prend une action et met à jour l'état de l'environnement en conséquence.
-    // Elle renvoie le nouvel état, la récompense obtenue et un indicateur de fin d'épisode (done).
-    fn step<R>(&mut self, action: f32, _: &mut R) -> (State, Score, bool)  
+    fn step<R>(&mut self, action: f32, _: &mut R) -> (State, Score, bool)
     where
-        R: Rng, // Le paramètre R est un générateur de nombres aléatoires qui implémente le trait Rng. Il est utilisé pour générer des nombres aléatoires dans la fonction step.
+        R: Rng,
     {
         if self.episode_done {
             return ([self.x, self.x_dot, self.theta, self.theta_dot], 0., true);
