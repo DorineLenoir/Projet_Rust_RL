@@ -1,5 +1,8 @@
-use env::{cartpole::CartPole, Environment, pcgrng::PCGRng};
+pub mod decod;
+pub mod interpret;
 
+use env::{cartpole::CartPole, Environment, pcgrng::PCGRng};
+use decod::{Instruction, decode_instruction};
 fn main() {
     // Création de l'envrionnement 
 
@@ -25,5 +28,7 @@ fn main() {
         }
     }
 
-    println!("Total reward: {}", total_reward)
+    println!("Total reward: {}", total_reward);
+
+
 }
