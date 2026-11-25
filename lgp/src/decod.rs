@@ -9,7 +9,7 @@
 ///     |    | 110  | 110 I2
 ///     |    | 111  | 111 I3
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct Instruction {
     pub des: u8,  // 2 bits
     pub op: u8,   // 2 bits
@@ -17,7 +17,7 @@ pub struct Instruction {
     pub src2: u8, // 3 bits
 }
 
-#[derive(Debug, PartialEq)]
+#[derive(Debug, PartialEq, Eq, Clone, Copy)]
 pub struct Trame {
     pub instructions: [Instruction; 6],
 } 
@@ -69,14 +69,15 @@ mod tests {
         
         // Résultats attendus, dans l'ordre de lecture : des, op, src1, src2.
         let expected = [
-            (0b00, 0b00, 0b000, 0b000), // instruction 0: 0000000000
-            (0b00, 0b01, 0b110, 0b010), // instruction 1: 0001110010
-            (0b01, 0b10, 0b101, 0b001), // instruction 2: 0110101001
-            (0b10, 0b11, 0b010, 0b110), // instruction 3: 1011010110
-            (0b11, 0b00, 0b011, 0b011), // instruction 4: 1100011011
-            (0b11, 0b11, 0b101, 0b101), // instruction 5: 1111101101
+            Instruction { des: 0b00, op: 0b00, src1: 0b000, src2: 0b000 }, // instruction 0
+            Instruction { des: 0b00, op: 0b01, src1: 0b110, src2: 0b010 }, // instruction 1
+            Instruction { des: 0b01, op: 0b10, src1: 0b101, src2: 0b001 }, // instruction 2
+            Instruction { des: 0b10, op: 0b11, src1: 0b010, src2: 0b110 }, // instruction 3
+            Instruction { des: 0b11, op: 0b00, src1: 0b011, src2: 0b011 }, // instruction 4
+            Instruction { des: 0b11, op: 0b11, src1: 0b101, src2: 0b101 }, // instruction 5
         ];
 
+        assert_eq!(decoded_trame.instructions, expected);
         assert_eq!(decoded_trame, decoded_trame2);
     }    
 }
